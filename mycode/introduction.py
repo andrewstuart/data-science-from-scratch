@@ -2,16 +2,16 @@ from __future__ import division
 from collections import Counter, defaultdict
 
 users = [
-    { "id": 0, "name": "Hero" },
-    { "id": 1, "name": "Dunn" },
-    { "id": 2, "name": "Sue" },
-    { "id": 3, "name": "Chi" },
-    { "id": 4, "name": "Thor" },
-    { "id": 5, "name": "Clive" },
-    { "id": 6, "name": "Hicks" },
-    { "id": 7, "name": "Devin" },
-    { "id": 8, "name": "Kate" },
-    { "id": 9, "name": "Klein" }
+    {"id": 0, "name": "Hero"},
+    {"id": 1, "name": "Dunn"},
+    {"id": 2, "name": "Sue"},
+    {"id": 3, "name": "Chi"},
+    {"id": 4, "name": "Thor"},
+    {"id": 5, "name": "Clive"},
+    {"id": 6, "name": "Hicks"},
+    {"id": 7, "name": "Devin"},
+    {"id": 8, "name": "Kate"},
+    {"id": 9, "name": "Klein"}
 ]
 
 friendships = [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 4),
@@ -25,6 +25,7 @@ for i, j in friendships:
     users[i]["friends"].append(users[j])
     users[j]["friends"].append(users[i])
 
+
 def num_friends(user):
     """How many friends does a user have?
 
@@ -34,15 +35,6 @@ def num_friends(user):
     """
     return len(user["friends"])
 
-total_conns = sum(num_friends(u) for u in users)
-
-dens = total_conns / len(users)
-
-nfriends_by_id = [(user["id"], num_friends(user)) for user in users]
-
-nfriends_by_id = sorted(nfriends_by_id,
-       key=lambda f: f[1],
-       reverse=True)
 
 def not_the_same(u1, u2):
     """Returns whether the users share the same id
@@ -54,10 +46,12 @@ def not_the_same(u1, u2):
     """
     return u1["id"] != u2["id"]
 
+
 def not_already_friends(u1, u2):
     """two users are not already friends."""
 
     return all(not_the_same(f, u2) for f in u1["friends"])
+
 
 def fof(user):
     return Counter((foaf["id"], foaf["name"])
@@ -66,9 +60,23 @@ def fof(user):
                    if not_the_same(user, foaf)
                    and not_already_friends(user, foaf))
 
-uar = [(u["name"], u["id"], fof(u)) for u in users]
-t = '\n'.join(str(f) for f in uar)
-print(t)
+
+total_conns = sum(num_friends(u) for u in users)
+
+dens = total_conns / len(users)
+
+nfriends_by_id = [(user["id"], num_friends(user)) for user in users]
+
+nfriends_by_id = sorted(nfriends_by_id,
+                        key=lambda f: f[1],
+                        reverse=True)
+
+user_fofs = [(u["name"], u["id"], fof(u)) for u in users]
+
+for u in user_fofs:
+    my_fofs = [(key[1], u[2][key]) for key in u[2]]
+    fof_formatted = "\n\t\t" + "\n\t\t".join("%s: %d friends in common" % (fof[0], fof[1]) for fof in my_fofs)
+    print("%s may know:%s" % (u[0], fof_formatted))
 
 interests = [
     (0, "Hadoop"), (0, "Big Data"), (0, "HBase"), (0, "Java"),
