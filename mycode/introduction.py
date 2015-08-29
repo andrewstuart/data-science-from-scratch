@@ -1,5 +1,6 @@
 from __future__ import division
 from collections import Counter, defaultdict
+from matplotlib import pyplot as plt
 
 users = [
     {"id": 0, "name": "Hero"},
@@ -73,10 +74,10 @@ nfriends_by_id = sorted(nfriends_by_id,
 
 user_fofs = [(u["name"], u["id"], fof(u)) for u in users]
 
-for u in user_fofs:
-    my_fofs = [(key[1], u[2][key]) for key in u[2]]
-    fof_formatted = "\n\t\t" + "\n\t\t".join("%s: %d friends in common" % (fof[0], fof[1]) for fof in my_fofs)
-    print("%s may know:%s" % (u[0], fof_formatted))
+# for u in user_fofs:
+#     my_fofs = [(key[1], u[2][key]) for key in u[2]]
+#     fof_formatted = "\n\t\t" + "\n\t\t".join("%s: %d friends in common" % (fof[0], fof[1]) for fof in my_fofs)
+#     print("%s may know:%s" % (u[0], fof_formatted))
 
 interests = [
     (0, "Hadoop"), (0, "Big Data"), (0, "HBase"), (0, "Java"),
@@ -101,3 +102,14 @@ u_by_i = defaultdict(list)
 for u, i in interests:
     i_by_u[u].append(i)
     u_by_i[i].append(u)
+
+a = Counter(i[1] for i in interests)
+
+interest, count = zip(*a.most_common())
+
+plt.bar([i for i, _ in enumerate(count)], count, 10/len(count))
+plt.xticks([i for i, _ in enumerate(interest)], interest)
+plt.title('Interests')
+plt.show()
+# plt.savefig('test.png')
+
